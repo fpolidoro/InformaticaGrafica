@@ -1,6 +1,6 @@
-# Blender v2.78 (sub 0) OBJ File: 'Muro.blend'
+# Blender v2.78 (sub 0) OBJ File: 'muro.blend'
 # www.blender.org
-mtllib Muro.mtl
+mtllib muro.mtl
 o muro_Plane
 v 4.037496 1.045206 3.988811
 v 0.037496 1.045206 3.359945
