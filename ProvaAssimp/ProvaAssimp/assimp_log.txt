@@ -1,0 +1,27 @@
+Info,  T14960: Load Models\drago.obj
+Info,  T14960: Found a matching importer for this file format
+Info,  T14960: Import root directory is 'Models\'
+Info,  T14960: Entering post processing pipeline
+Info,  T14960: TriangulateProcess finished. All polygons have been triangulated.
+Info,  T14960: Points: 0, Lines: 0, Triangles: 27, Polygons: 0 (Meshes, X = removed)
+Error, T14960: Unable to compute tangents: UV0 and normals must be there 
+Skipping one or more lines with the same contents
+Info,  T14960: JoinVerticesProcess finished | Verts in: 8264 out: 3956 | ~52.1%
+Info,  T14960: Cache relevant are 27 meshes (4088 faces). Average output ACMR is 1.074119
+Info,  T14960: Leaving post processing pipeline
+Info,  T14960: Load Models\muro.obj
+Info,  T14960: Found a matching importer for this file format
+Info,  T14960: Import root directory is 'Models\'
+Info,  T14960: Entering post processing pipeline
+Warn,  T14960: Found 368 degenerated primitives
+Info,  T14960: TriangulateProcess finished. All polygons have been triangulated.
+Info,  T14960: Points: 0, Lines: 1, Triangles: 2, Polygons: 0 (Meshes, X = removed)
+Error, T14960: FindInvalidDataProcess fails on mesh uvcoords: All vectors are identical
+Skipping one or more lines with the same contents
+Info,  T14960: FindInvalidDataProcess finished. Found issues ...
+Info,  T14960: Tangents are undefined for line and point meshes
+Error, T14960: Unable to compute tangents: UV0 and normals must be there 
+Info,  T14960: JoinVerticesProcess finished | Verts in: 3248 out: 2160 | ~33.5%
+Error, T14960: This algorithm works on triangle meshes only
+Info,  T14960: Cache relevant are 2 meshes (1104 faces). Average output ACMR is 1.777174
+Info,  T14960: Leaving post processing pipeline
