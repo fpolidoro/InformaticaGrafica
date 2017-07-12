@@ -4,7 +4,7 @@
 
 class Collectible {
 public:
-	Collectible(GLuint callList, int type, aiVector2D bottomLeft, aiVector2D topRight);
+	Collectible(GLuint callList, int type, aiVector2D bottomLeft, aiVector2D size);
 
 	void Draw();
 	void Move(float amount);

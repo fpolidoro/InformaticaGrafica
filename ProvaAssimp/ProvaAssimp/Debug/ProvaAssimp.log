@@ -56,7 +56,7 @@ c:\users\utente\desktop\provaassimp\provaassimp\assimp\include\aiquaternion.h(24
 c:\users\utente\desktop\provaassimp\provaassimp\assimp\include\aiquaternion.h(248): warning C4244: '=': conversione da 'double' a 'float'. Possibile perdita di dati.
 c:\users\utente\desktop\provaassimp\provaassimp\assimp\include\aiquaternion.h(249): warning C4244: '=': conversione da 'double' a 'float'. Possibile perdita di dati.
 c:\users\utente\desktop\provaassimp\provaassimp\utils.h(47): warning C4091: 'static ': ignorato a sinistra di 'Utils' quando non si dichiara alcuna variabile
-c:\users\utente\desktop\provaassimp\provaassimp\main.cpp(128): warning C4101: 'stream': variabile locale senza riferimenti
+c:\users\utente\desktop\provaassimp\provaassimp\main.cpp(156): warning C4101: 'stream': variabile locale senza riferimenti
   Generazione del codice in corso...
   ProvaAssimp.vcxproj -> C:\Users\utente\Desktop\ProvaAssimp\Debug\ProvaAssimp.exe
   ProvaAssimp.vcxproj -> C:\Users\utente\Desktop\ProvaAssimp\Debug\ProvaAssimp.pdb (Partial PDB)

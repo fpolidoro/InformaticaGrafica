@@ -42,20 +42,24 @@ void Block::Draw() {
 		i->Draw();
 }
 
-bool Block::ObstacleHit(aiVector2D lowLeft, aiVector2D upRight) {
+bool Block::ObstacleHit(aiVector2D bottomLeft, aiVector2D topRight) {
 
-	for each(Obstacle o in obstacles) 
-		if (o.Hit(lowLeft, upRight))
+	for (std::list<Obstacle>::iterator i = obstacles.begin(); i != obstacles.end(); ++i)
+		if (i->Hit(bottomLeft, topRight)) {
 			return true;
+		}
 
 	return false;
 }
 
-int Block::CollectibleHit(aiVector2D lowLeft, aiVector2D upRight) {
+int Block::CollectibleHit(aiVector2D bottomLeft, aiVector2D topRight) {
 
-	for each(Collectible c in collectibles)
-		if (c.Hit(lowLeft, upRight))
-			return c.type;
+	for (std::list<Collectible>::iterator i = collectibles.begin(); i != collectibles.end(); ++i)
+		if (i->Hit(bottomLeft, topRight)) {
+			int type = i->type;
+			collectibles.erase(i);
+			return type;
+		}
 
 	return 0;
 }

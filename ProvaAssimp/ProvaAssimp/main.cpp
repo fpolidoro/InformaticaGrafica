@@ -8,12 +8,14 @@ GLfloat lightPosition[] = { 0.0f, 15.f, 15.0f, 1.0f };
 Level level;
 Dragon dragon;
 int oldTime = 0;
-bool turnUp = false, turnDown = false;
+bool turnUp = false, turnDown = false, invulnerable = false;
+float hitTimer = 0.f;
 
 #define FIELD_OF_VIEW 45.0
 #define Z_NEAR 1.0
 #define Z_FAR 200.0
-#define SPEED 6.f
+#define SPEED 12.f
+#define HIT_TIME 1.f
 
 void Reshape(int width, int height) {
 	const double aspectRatio = (float)width / height;
@@ -32,7 +34,8 @@ void Display(void) {
 	gluLookAt(16.f, 8.6f, 25.5f, 16.f, 8.6f, 0.f, 0.f, 1.f, 0.f);
 
 	level.Draw();
-	dragon.Draw();
+	if (!invulnerable)
+		dragon.Draw();
 
 	glutSwapBuffers();
 }
@@ -46,6 +49,31 @@ void Idle(void) {
 
 	dragon.Move(turnUp, turnDown, deltaTime);
 	level.Move(-SPEED*deltaTime);
+
+	if (!invulnerable) {
+		switch (level.CheckHit(dragon.GetBottomLeft(), dragon.GetTopRight())) {
+		case 1:
+			Utils::Log("Hallo boss");
+			break;
+		case 2:
+			dragon.GainLife();
+			break;
+		case 3:
+			dragon.LoseLife();
+			hitTimer = HIT_TIME;
+			invulnerable = true;
+			break;
+		default:
+			break;
+		}
+	} else {
+		hitTimer -= deltaTime;
+		if (hitTimer <= 0.f) {
+			hitTimer = 0.f;
+			invulnerable = false;
+		}
+	}
+
 	glutPostRedisplay();
 }
 

@@ -1,32 +1,27 @@
 #include "Level.h"
 
 Level::Level() {
-	srand((unsigned)time(NULL));
+
 }
 
 bool Level::Init() {
 	if (!LoadAssets())
 		return false;
 
-	GLuint wallList = Utils::GenerateList(wall);
-	GLuint coinList = Utils::GenerateList(coin);
-	GLuint lifeList = Utils::GenerateList(life);
-	GLuint platform1List = Utils::GenerateList(platform1);
-	GLuint platform2List = Utils::GenerateList(platform2);
+	srand((unsigned)time(NULL));
 
 	// Hardcoded initialization
-
 	std::list<Collectible> collectibles;
 	std::list<Obstacle> obstacles;
 
-	collectibles.push_back(Collectible(coinList, 1, aiVector2D(2, 2), aiVector2D(3, 3)));
-	collectibles.push_back(Collectible(coinList, 1, aiVector2D(3, 2), aiVector2D(4, 3)));
-	collectibles.push_back(Collectible(coinList, 1, aiVector2D(4, 2), aiVector2D(5, 3)));
-	collectibles.push_back(Collectible(lifeList, 2, aiVector2D(31, 2), aiVector2D(32, 3)));
+	collectibles.push_back(Collectible(elements[0].list, 1, aiVector2D(2, 2), elements[0].size));
+	collectibles.push_back(Collectible(elements[0].list, 1, aiVector2D(3, 2), elements[0].size));
+	collectibles.push_back(Collectible(elements[0].list, 1, aiVector2D(4, 2), elements[0].size));
+	collectibles.push_back(Collectible(elements[1].list, 2, aiVector2D(31, 2), elements[1].size));
 
-	obstacles.push_back(Obstacle(platform1List, aiVector2D(10, 3), aiVector2D(12, 4)));
-	obstacles.push_back(Obstacle(platform2List, aiVector2D(24, 2), aiVector2D(26, 4)));
-
+	obstacles.push_back(Obstacle(elements[9].list, aiVector2D(10, 1), elements[9].size));
+	obstacles.push_back(Obstacle(elements[10].list, aiVector2D(11, 6), elements[10].size));
+	obstacles.push_back(Obstacle(elements[11].list, aiVector2D(24, 4), elements[11].size));
 
 	Block b1(wallList), b2(wallList);
 	b1.Init(START_POS);
@@ -42,15 +37,36 @@ bool Level::Init() {
 
 bool Level::LoadAssets() {
 	wall = Utils::LoadAsset("Models\\muro.obj");
-	coin = Utils::LoadAsset("Models\\moneta.obj");
-	life = Utils::LoadAsset("Models\\yinyang.obj");
-	platform1 = Utils::LoadAsset("Models\\impalcatura1.obj");
-	platform2 = Utils::LoadAsset("Models\\impalcatura2.obj");
-
-	if (!wall || !coin || !life || !platform1 || !platform2) {
-		fprintf(stderr, "Couldn't load assets");
+	if (!wall) {
+		Utils::Log("Couldn't load asset file");
 		return false;
-	};
+	}
+	wallList = Utils::GenerateList(wall);
+
+	std::ifstream file("elements.txt", std::ios::in);
+
+	if (!file) {
+		Utils::Log("Couldn't load asset file");
+		return false;
+	}
+
+	std::string filename;
+	int xSize, ySize;
+	while (file >> filename >> xSize >> ySize) {
+		Element e;
+		e.model = Utils::LoadAsset(filename.c_str());
+		if (!e.model) {
+			Utils::Log("Couldn't load asset");
+			return false;
+		}
+
+		e.list = Utils::GenerateList(e.model);
+		e.size.Set(xSize, ySize);
+		elements.push_back(e);
+	}
+
+	file.close();
+	return true;
 }
 
 void Level::Move(float amount) {
@@ -72,15 +88,26 @@ void Level::NextBlock() {
 
 	Block b = blockArray[n];
 	b.Init(blockQueue.back().position.x + LENGTH);
+
 	blockQueue.push_back(b);
 	blockQueue.pop_front();
-	std::cout << n << std::endl;
+}
+
+int Level::CheckHit(aiVector2D bottomLeft, aiVector2D topRight) {
+
+	for (std::list<Block>::iterator i = blockQueue.begin(); i != blockQueue.end(); ++i) {
+		if (i->ObstacleHit(bottomLeft, topRight))
+			return 3;
+		int hit = i->CollectibleHit(bottomLeft, topRight);
+		if (hit != 0)
+			return hit;
+	}
+	return 0;
 }
 
 Level::~Level() {
 	aiReleaseImport(wall);
-	aiReleaseImport(coin);
-	aiReleaseImport(life);
-	aiReleaseImport(platform1);
-	aiReleaseImport(platform2);
+
+	for (int i = 0; i < elements.size(); i++)
+		aiReleaseImport(elements[i].model);
 }

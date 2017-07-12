@@ -13,8 +13,8 @@ public:
 	void Move(float amount);
 	void Draw();
 
-	bool ObstacleHit(aiVector2D lowLeft, aiVector2D upRight);
-	int CollectibleHit(aiVector2D lowLeft, aiVector2D upRight);
+	bool ObstacleHit(aiVector2D bottomLeft, aiVector2D topRight);
+	int CollectibleHit(aiVector2D bottomLeft, aiVector2D topRight);
 
 	aiVector2D position;
 

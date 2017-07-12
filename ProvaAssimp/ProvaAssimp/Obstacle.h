@@ -4,7 +4,7 @@
 
 class Obstacle {
 public:
-	Obstacle(GLuint callList, aiVector2D bottomLeft, aiVector2D topRight);
+	Obstacle(GLuint callList, aiVector2D bottomLeft, aiVector2D size);
 
 	void Draw();
 	void Move(float amount);
