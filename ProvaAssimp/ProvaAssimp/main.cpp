@@ -7,7 +7,7 @@ GLfloat lightPosition[] = { 0.0f, 15.f, 15.0f, 1.0f };
 
 Level level;
 Dragon dragon;
-int oldTime = 0;
+int oldTime = 0, score = 0, highScore = 0;
 bool turnUp = false, turnDown = false, invulnerable = false;
 float hitTimer = 0.f;
 
@@ -26,6 +26,27 @@ void Reshape(int width, int height) {
 	glViewport(0, 0, width, height);
 }
 
+void DrawScore() {
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_LIGHTING);
+
+	glPushMatrix();
+	glTranslatef(0.f, 16.f, 2.f);
+	glScalef(.01f, .01f, .01f);
+	glColor3f(1.0, 0.3f, 0.3f);
+	glRasterPos2f(0.f, 0.f);
+
+	std::stringstream scoreString;
+	scoreString << "Score: " << score;
+	for (int i = 0; i < scoreString.str().length(); i++)
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, scoreString.str()[i]);
+
+	glPopMatrix();
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_LIGHTING);
+}
+
+
 void Display(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -33,20 +54,11 @@ void Display(void) {
 	glLoadIdentity();
 	gluLookAt(16.f, 8.6f, 25.5f, 16.f, 8.6f, 0.f, 0.f, 1.f, 0.f);
 
+	DrawScore();
 	level.Draw();
+
 	if (!invulnerable)
 		dragon.Draw();
-
-	glScalef(.01f, .01f, .01f);
-	glTranslatef(16.f, 8.6f, 0.f);
-	glColor3f(0.0, 1.0, 1.0);
-	glRasterPos2f(0, 0);
-
-	//char* string = "qualcosa";
-	//int len, i;
-	//len = (int)strlen(string);
-	//for (i = 0; i < len; i++)
-	//	glutStrokeCharacter(GLUT_STROKE_ROMAN, string[i]);
 
 	glutSwapBuffers();
 }
@@ -64,7 +76,7 @@ void Idle(void) {
 	if (!invulnerable) {
 		switch (level.CheckHit(dragon.GetBottomLeft(), dragon.GetTopRight())) {
 		case 1:
-			Utils::Log("Hallo boss");
+			score += 100;
 			break;
 		case 2:
 			dragon.GainLife();

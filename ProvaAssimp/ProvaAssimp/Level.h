@@ -40,6 +40,9 @@ private:
 
 	const aiScene* wall;
 	GLuint wallList;
+	const aiScene* background;
+	GLuint backgroundList;
+
 	int test = 0;
 };
 

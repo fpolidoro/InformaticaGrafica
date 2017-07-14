@@ -17,6 +17,14 @@ bool Level::Init() {
 }
 
 bool Level::LoadAssets() {
+	background = Utils::LoadAsset("Models\\sfondo.obj");
+	if (!background) {
+		Utils::Log("Couldn't load asset file");
+		return false;
+	}
+
+	backgroundList = Utils::GenerateList(background);
+
 	wall = Utils::LoadAsset("Models\\muro.obj");
 	if (!wall) {
 		Utils::Log("Couldn't load asset file");
@@ -97,6 +105,12 @@ void Level::Move(float amount) {
 }
 
 void Level::Draw() {
+	glPushMatrix();
+	glTranslatef(-10.0f, -6.f, -10.f);
+	glScalef(1.2f, 1.2f, 0.f);
+	glCallList(backgroundList);
+	glPopMatrix();
+
 	for (std::list<Block>::iterator i = blockQueue.begin(); i != blockQueue.end(); ++i)
 		i->Draw();
 }
