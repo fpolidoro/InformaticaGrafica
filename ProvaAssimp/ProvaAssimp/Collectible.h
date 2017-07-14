@@ -19,5 +19,6 @@ private:
 
 	aiVector2D bottomLeft;
 	aiVector2D topRight;
+	float rotation = 0.f;
 };
 
