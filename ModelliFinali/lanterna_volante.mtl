@@ -1,7 +1,7 @@
-# Blender MTL File: 'lanterna_volante.blend'
+# Blender MTL File: 'lanterna_volante_lowpoliblend.blend'
 # Material Count: 1
 
-newmtl Material.001
+newmtl Material.000
 Ns 96.078431
 Ka 1.000000 1.000000 1.000000
 Kd 0.640000 0.640000 0.640000
@@ -10,4 +10,4 @@ Ke 0.000000 0.000000 0.000000
 Ni 1.000000
 d 1.000000
 illum 2
-map_Kd \lanternavolante.png
+map_Kd lanternavolante.png
