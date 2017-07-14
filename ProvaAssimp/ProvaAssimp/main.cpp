@@ -14,7 +14,7 @@ float hitTimer = 0.f;
 #define FIELD_OF_VIEW 45.0
 #define Z_NEAR 1.0
 #define Z_FAR 200.0
-#define SPEED 12.f
+#define VELOCITY 12.f
 #define HIT_TIME 1.f
 
 void Reshape(int width, int height) {
@@ -37,6 +37,17 @@ void Display(void) {
 	if (!invulnerable)
 		dragon.Draw();
 
+	glScalef(.01f, .01f, .01f);
+	glTranslatef(16.f, 8.6f, 0.f);
+	glColor3f(0.0, 1.0, 1.0);
+	glRasterPos2f(0, 0);
+
+	//char* string = "qualcosa";
+	//int len, i;
+	//len = (int)strlen(string);
+	//for (i = 0; i < len; i++)
+	//	glutStrokeCharacter(GLUT_STROKE_ROMAN, string[i]);
+
 	glutSwapBuffers();
 }
 
@@ -48,7 +59,7 @@ void Idle(void) {
 	oldTime = time;
 
 	dragon.Move(turnUp, turnDown, deltaTime);
-	level.Move(-SPEED*deltaTime);
+	level.Move(-VELOCITY*deltaTime);
 
 	if (!invulnerable) {
 		switch (level.CheckHit(dragon.GetBottomLeft(), dragon.GetTopRight())) {
@@ -140,16 +151,15 @@ bool InitGL() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	oldTime = glutGet(GLUT_ELAPSED_TIME);
-
 	return true;					// Initialization Went OK
 }
 
 bool InitGame() {
-	if (dragon.Init() && level.Init())
-		return true;
-	else
+	if (!dragon.Init() || !level.Init())
 		return false;
+
+	oldTime = glutGet(GLUT_ELAPSED_TIME);
+	return true;
 }
 
 int main(int argc, char **argv) {

@@ -9,8 +9,12 @@ Obstacle::Obstacle(GLuint callList, aiVector2D bottomLeft, aiVector2D size) {
 void Obstacle::Draw() {
 	glPushMatrix();
 	glTranslatef(bottomLeft.x, bottomLeft.y, 0.f);
-	glutSolidCube(0.5f);
 	glCallList(callList);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(bottomLeft.x, bottomLeft.y, 0.f);
+	glutSolidCube(0.5f);
 	glPopMatrix();
 
 	glPushMatrix();

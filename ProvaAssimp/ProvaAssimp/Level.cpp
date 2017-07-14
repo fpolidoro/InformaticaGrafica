@@ -8,29 +8,10 @@ bool Level::Init() {
 	if (!LoadAssets())
 		return false;
 
+	if (!GenerateBlocks())
+		return false;
+
 	srand((unsigned)time(NULL));
-
-	// Hardcoded initialization
-	std::list<Collectible> collectibles;
-	std::list<Obstacle> obstacles;
-
-	collectibles.push_back(Collectible(elements[0].list, 1, aiVector2D(2, 2), elements[0].size));
-	collectibles.push_back(Collectible(elements[0].list, 1, aiVector2D(3, 2), elements[0].size));
-	collectibles.push_back(Collectible(elements[0].list, 1, aiVector2D(4, 2), elements[0].size));
-	collectibles.push_back(Collectible(elements[1].list, 2, aiVector2D(31, 2), elements[1].size));
-
-	obstacles.push_back(Obstacle(elements[9].list, aiVector2D(10, 1), elements[9].size));
-	obstacles.push_back(Obstacle(elements[10].list, aiVector2D(11, 6), elements[10].size));
-	obstacles.push_back(Obstacle(elements[11].list, aiVector2D(24, 4), elements[11].size));
-
-	Block b1(wallList), b2(wallList);
-	b1.Init(START_POS);
-	b2.Init(START_POS + LENGTH);
-	b2.InitHardCoded(obstacles, collectibles);
-	blockArray[0] = b1;
-	blockArray[1] = b2;
-	blockQueue.push_back(b1);
-	blockQueue.push_back(b2);
 
 	return true;
 }
@@ -43,7 +24,7 @@ bool Level::LoadAssets() {
 	}
 	wallList = Utils::GenerateList(wall);
 
-	std::ifstream file("elements.txt", std::ios::in);
+	std::ifstream file("Levels\\elements.txt", std::ios::in);
 
 	if (!file) {
 		Utils::Log("Couldn't load asset file");
@@ -69,6 +50,43 @@ bool Level::LoadAssets() {
 	return true;
 }
 
+bool Level::GenerateBlocks() {
+
+	Block b(wallList);
+	b.Move(START_POS);
+	blockQueue.push_back(b);
+	b.Move(LENGTH);
+	blockQueue.push_back(b);
+
+	for (int i = 1; i <= N_BLOCKS; i++) {
+		std::stringstream filename;
+		filename << "Levels\\level" << i << ".txt";
+
+		std::ifstream file(filename.str(), std::ios::in);
+
+		if (!file) {
+			Utils::Log("Couldn't load asset file");
+			return false;
+		}
+
+		std::list<Collectible> collectibles;
+		std::list<Obstacle> obstacles;
+		int e, xPos, yPos;
+
+		while (file >> e >> xPos >> yPos) {
+			if (e < 2)
+				collectibles.push_back(Collectible(elements[e].list, e + 1, aiVector2D(xPos, yPos), elements[e].size));
+			else
+				obstacles.push_back(Obstacle(elements[e].list, aiVector2D(xPos, yPos), elements[e].size));
+		}
+
+		file.close();
+		blockArray.push_back(Block(wallList, obstacles, collectibles));
+	}
+
+	return true;
+}
+
 void Level::Move(float amount) {
 
 	for (std::list<Block>::iterator i = blockQueue.begin(); i != blockQueue.end(); ++i)
@@ -84,10 +102,12 @@ void Level::Draw() {
 }
 
 void Level::NextBlock() {
-	int n = rand() % N_BLOCKS;
+	//int n = rand() % blockArray.size();
+	test = (test < N_BLOCKS - 1) ? test + 1 : 0;
 
-	Block b = blockArray[n];
-	b.Init(blockQueue.back().position.x + LENGTH);
+	//Block b = blockArray[n];
+	Block b = blockArray[test];
+	b.Move(blockQueue.back().position.x + LENGTH);
 
 	blockQueue.push_back(b);
 	blockQueue.pop_front();

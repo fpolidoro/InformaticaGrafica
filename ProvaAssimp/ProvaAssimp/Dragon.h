@@ -5,6 +5,7 @@
 
 #define MAX_PARTS 8
 #define MAX_LIVES MAX_PARTS - 2
+#define HITBOX_SIZE 1.5f
 
 #define START_XPOS 10.f
 #define START_YPOS 8.f

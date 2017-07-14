@@ -5,8 +5,9 @@
 #include <ctime>
 #include <fstream>
 #include <vector>
+#include <sstream>
 
-#define N_BLOCKS 2
+#define N_BLOCKS 15
 #define START_POS -14.f
 #define LENGTH 64.f
 #define END_POS START_POS - LENGTH
@@ -18,6 +19,7 @@ public:
 
 	bool Init();
 	bool LoadAssets();
+	bool GenerateBlocks();
 	void Move(float amount);
 	void Draw();
 	void NextBlock();
@@ -26,7 +28,7 @@ public:
 	~Level();
 
 private:
-	Block blockArray[N_BLOCKS];
+	std::vector<Block> blockArray;
 	std::list<Block> blockQueue;
 
 	struct Element {
@@ -38,5 +40,6 @@ private:
 
 	const aiScene* wall;
 	GLuint wallList;
+	int test = 0;
 };
 

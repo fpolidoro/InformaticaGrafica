@@ -130,11 +130,11 @@ void Dragon::LoseLife() {
 }
 
 aiVector2D Dragon::GetBottomLeft() {
-	return parts[0].position - 2.f;
+	return parts[0].position - HITBOX_SIZE;
 }
 
 aiVector2D Dragon::GetTopRight() {
-	return parts[0].position + 2.f;
+	return parts[0].position + HITBOX_SIZE;
 }
 
 

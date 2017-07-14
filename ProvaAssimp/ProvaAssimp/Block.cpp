@@ -1,23 +1,15 @@
 #include "Block.h"
 
-Block::Block(){}
-
 Block::Block(GLuint callList) {
 	this->callList = callList;
+	position.Set(0.f, 0.f);
 }
 
-void Block::Init(float start) {
-	this->position.Set(start, 0.f);
-}
-
-void Block::InitHardCoded(std::list<Obstacle> obstacles, std::list<Collectible> collectibles) {
+Block::Block(GLuint callList, std::list<Obstacle> obstacles, std::list<Collectible> collectibles) {
+	this->callList = callList;
 	this->obstacles = obstacles;
 	this->collectibles = collectibles;
-
-	for (std::list<Obstacle>::iterator i = this->obstacles.begin(); i != this->obstacles.end(); ++i)
-		i->Move(position.x);
-	for (std::list<Collectible>::iterator i = this->collectibles.begin(); i != this->collectibles.end(); ++i)
-		i->Move(position.x);
+	position.Set(0.f, 0.f);
 }
 
 void Block::Move(float amount) {

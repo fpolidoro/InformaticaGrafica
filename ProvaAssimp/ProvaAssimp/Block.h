@@ -5,11 +5,9 @@
 
 class Block {
 public:
-	Block();
 	Block(GLuint callList);
+	Block(GLuint callList, std::list<Obstacle> obstacles, std::list<Collectible> collectibles);
 
-	void Init(float x);
-	void InitHardCoded(std::list<Obstacle> obstacles, std::list<Collectible> collectibles);
 	void Move(float amount);
 	void Draw();
 

@@ -10,8 +10,12 @@ Collectible::Collectible(GLuint callList, int type, aiVector2D bottomLeft, aiVec
 void Collectible::Draw() {
 	glPushMatrix();
 	glTranslatef(bottomLeft.x, bottomLeft.y, 0.f);
-	glutSolidCube(0.5f);
 	glCallList(callList);
+	glPopMatrix();
+
+	glPushMatrix();
+	glTranslatef(bottomLeft.x, bottomLeft.y, 0.f);
+	glutSolidCube(0.5f);
 	glPopMatrix();
 
 	glPushMatrix();
