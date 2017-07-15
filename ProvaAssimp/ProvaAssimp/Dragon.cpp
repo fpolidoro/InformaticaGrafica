@@ -6,10 +6,8 @@ Dragon::Dragon() {
 bool Dragon::Init() {
 
 	model = Utils::LoadAsset("Models\\drago.obj");
-	if (!model) {
-		fprintf(stderr, "Couldn't load asset");
+	if (!(model = Utils::LoadAsset("Models\\drago.obj")))
 		return false;
-	};
 
 	headList = glGenLists(1);
 	glNewList(headList, GL_COMPILE);
@@ -26,6 +24,13 @@ bool Dragon::Init() {
 	Utils::RecursiveRender(model, model->mRootNode->mChildren[0], 1.0);
 	glEndList();
 
+	return true;
+}
+
+void Dragon::Start() {
+	lives = MAX_LIVES;
+	movVel = 0.f;
+
 	parts[0].position.Set(START_XPOS, START_YPOS);
 	parts[0].head.Set(START_XPOS + 2.f, START_YPOS);
 	parts[0].tail.Set(START_XPOS - 2.f, START_YPOS);
@@ -36,8 +41,6 @@ bool Dragon::Init() {
 		parts[i].head.Set(parts[i].position.x + 1.f, START_YPOS);
 		parts[i].tail.Set(parts[i].position.x - 1.f, START_YPOS);
 	}
-
-	return true;
 }
 
 void Dragon::Move(bool upwards, bool downwards, float deltaTime) {
@@ -119,14 +122,16 @@ void Dragon::Draw() {
 }
 
 void Dragon::GainLife() {
-	
-	if (lives < MAX_LIVES)
+	if (lives < MAX_LIVES) 
 		lives++;
 }
 
-void Dragon::LoseLife() {
-	if (lives > 0)
+bool Dragon::LoseLife() {
+	if (lives > 0) {
 		lives--;
+		return true;
+	}
+	return false;
 }
 
 aiVector2D Dragon::GetBottomLeft() {
@@ -136,7 +141,6 @@ aiVector2D Dragon::GetBottomLeft() {
 aiVector2D Dragon::GetTopRight() {
 	return parts[0].position + HITBOX_SIZE;
 }
-
 
 Dragon::~Dragon() {
 	aiReleaseImport(model);

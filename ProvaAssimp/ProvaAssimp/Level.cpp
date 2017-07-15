@@ -11,25 +11,17 @@ bool Level::Init() {
 	if (!GenerateBlocks())
 		return false;
 
-	srand((unsigned)time(NULL));
-
 	return true;
 }
 
 bool Level::LoadAssets() {
-	background = Utils::LoadAsset("Models\\sfondo.obj");
-	if (!background) {
-		Utils::Log("Couldn't load asset file");
+	;
+	if (!(background = Utils::LoadAsset("Models\\sfondo.obj")))
 		return false;
-	}
-
 	backgroundList = Utils::GenerateList(background);
 
-	wall = Utils::LoadAsset("Models\\muro.obj");
-	if (!wall) {
-		Utils::Log("Couldn't load asset file");
+	if (!(wall = Utils::LoadAsset("Models\\muro.obj")))
 		return false;
-	}
 	wallList = Utils::GenerateList(wall);
 
 	std::ifstream file("Levels\\elements.txt", std::ios::in);
@@ -43,13 +35,11 @@ bool Level::LoadAssets() {
 	int xSize, ySize;
 	while (file >> filename >> xSize >> ySize) {
 		Element e;
-		e.model = Utils::LoadAsset(filename.c_str());
-		if (!e.model) {
-			Utils::Log("Couldn't load asset");
-			return false;
-		}
 
+		if (!(e.model = Utils::LoadAsset(filename.c_str())))
+			return false;
 		e.list = Utils::GenerateList(e.model);
+
 		e.size.Set(xSize, ySize);
 		elements.push_back(e);
 	}
@@ -59,13 +49,6 @@ bool Level::LoadAssets() {
 }
 
 bool Level::GenerateBlocks() {
-
-	Block b(wallList);
-	b.Move(START_POS);
-	blockQueue.push_back(b);
-	b.Move(LENGTH);
-	blockQueue.push_back(b);
-
 	for (int i = 1; i <= N_BLOCKS; i++) {
 		std::stringstream filename;
 		filename << "Levels\\level" << i << ".txt";
@@ -73,7 +56,7 @@ bool Level::GenerateBlocks() {
 		std::ifstream file(filename.str(), std::ios::in);
 
 		if (!file) {
-			Utils::Log("Couldn't load asset file");
+			Utils::Log("Couldn't load level file");
 			return false;
 		}
 
@@ -95,6 +78,17 @@ bool Level::GenerateBlocks() {
 	return true;
 }
 
+void Level::Start() {
+	Block b(wallList);
+	srand((unsigned)time(NULL));
+	blockQueue.clear();
+
+	b.Move(START_POS);
+	blockQueue.push_back(b);
+	b.Move(LENGTH);
+	blockQueue.push_back(b);
+}
+
 void Level::Move(float amount) {
 
 	for (std::list<Block>::iterator i = blockQueue.begin(); i != blockQueue.end(); ++i)
@@ -106,7 +100,7 @@ void Level::Move(float amount) {
 
 void Level::Draw() {
 	glPushMatrix();
-	glTranslatef(-10.0f, -6.f, -10.f);
+	glTranslatef(-10.2f, -6.f, -10.f);
 	glScalef(1.2f, 1.2f, 0.f);
 	glCallList(backgroundList);
 	glPopMatrix();
@@ -125,6 +119,9 @@ void Level::NextBlock() {
 
 	blockQueue.push_back(b);
 	blockQueue.pop_front();
+	std::stringstream s;
+	s << test;
+	Utils::Log(s.str());
 }
 
 int Level::CheckHit(aiVector2D bottomLeft, aiVector2D topRight) {

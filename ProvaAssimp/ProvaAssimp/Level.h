@@ -20,6 +20,7 @@ public:
 	bool Init();
 	bool LoadAssets();
 	bool GenerateBlocks();
+	void Start();
 	void Move(float amount);
 	void Draw();
 	void NextBlock();

@@ -238,8 +238,14 @@ const aiScene* Utils::LoadAssetWithBoundingBox(const char* path, struct aiVector
 const aiScene* Utils::LoadAsset(const char* path) {
 	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_Quality);
 
-	if (!scene) return NULL;
-	if (!LoadGLTextures(scene)) return NULL;
+	if (!scene) {
+		Utils::Log("Couldn't load asset");
+		return NULL;
+	}
+	if (!LoadGLTextures(scene)) {
+		Utils::Log("Couldn't load texture");
+		return NULL;
+	}
 
 	return scene;
 }
