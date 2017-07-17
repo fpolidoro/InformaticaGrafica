@@ -70,6 +70,10 @@ float Utils::Clamp(float min, float max, float value) {
 	else return value;
 }
 
+float Utils::Lerp(float a, float b, float t) {
+	return (1 - t)*a + t*b;
+}
+
 void Utils::ApplyMaterial(const struct aiMaterial *mtl) {
 	float c[4];
 
@@ -228,11 +232,11 @@ const aiScene* Utils::LoadAssetWithBoundingBox(const char* path, struct aiVector
 	const aiScene* scene = aiImportFile(path, aiProcessPreset_TargetRealtime_Quality);
 
 	if (!scene) return NULL;
-	if (!LoadGLTextures(scene)) return NULL;	
+	if (!LoadGLTextures(scene)) return NULL;
 
 	GetBoundingBox(scene, min, max);
 	return scene;
-	
+
 }
 
 const aiScene* Utils::LoadAsset(const char* path) {
@@ -364,10 +368,10 @@ void Utils::Log(std::string string) {
 	std::cout << string << std::endl;
 }
 
-GLuint Utils::GenerateList(const aiScene * model) {
+GLuint Utils::GenerateList(const aiScene* scene, const aiNode* node) {
 	GLuint list = glGenLists(1);
 	glNewList(list, GL_COMPILE);
-	Utils::RecursiveRender(model, model->mRootNode, 1.0);
+	Utils::RecursiveRender(scene, node, 1.0);
 	glEndList();
 	return list;
 }

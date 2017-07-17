@@ -19,6 +19,7 @@ public:
 	static void Color4f(const struct aiColor4D *color);
 	static void SetFloat4(float f[4], float a, float b, float c, float d);
 	static float Clamp(float min, float max, float value);
+	static float Lerp(float a, float b, float t);
 
 	static void ApplyMaterial(const struct aiMaterial *mtl);
 	static void RecursiveRender(const struct aiScene *sc, const struct aiNode* nd, float scale);
@@ -32,7 +33,7 @@ public:
 	static void DetachStream();
 
 	static void Log(std::string string);
-	static GLuint GenerateList(const aiScene* model);
+	static GLuint GenerateList(const aiScene* scene, const aiNode* node);
 
 private:
 

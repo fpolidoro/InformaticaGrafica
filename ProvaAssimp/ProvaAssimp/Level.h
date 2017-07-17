@@ -12,16 +12,24 @@
 #define LENGTH 64.f
 #define END_POS START_POS - LENGTH
 #define N_ELEMENTS 12
+#define VELOCITY 12.f
+
+#define BG_VELOCITY_FACTOR 4.f
+#define N_BG 4
+#define BG_Z_POS -7.f
+#define BG_X_POS -8.f
+#define BG_Y_POS -5.f
+#define BG_SCALE 1.5f
+#define BG_LENGTH (LENGTH / 2.f * BG_SCALE)
 
 class Level {
 public:
-	Level();
-
 	bool Init();
 	bool LoadAssets();
 	bool GenerateBlocks();
 	void Start();
-	void Move(float amount);
+
+	void Move(float deltaTime);
 	void Draw();
 	void NextBlock();
 	int CheckHit(aiVector2D bottomLeft, aiVector2D topRight);
@@ -41,8 +49,12 @@ private:
 
 	const aiScene* wall;
 	GLuint wallList;
+
 	const aiScene* background;
-	GLuint backgroundList;
+	GLuint skyList;
+	GLuint bgList[4];
+
+	float bgArray[4];
 
 	int test = 0;
 };

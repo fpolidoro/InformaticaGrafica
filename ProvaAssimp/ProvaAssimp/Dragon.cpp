@@ -9,20 +9,9 @@ bool Dragon::Init() {
 	if (!(model = Utils::LoadAsset("Models\\drago.obj")))
 		return false;
 
-	headList = glGenLists(1);
-	glNewList(headList, GL_COMPILE);
-	Utils::RecursiveRender(model, model->mRootNode->mChildren[2], 1.0);
-	glEndList();
-
-	centerList = glGenLists(1);
-	glNewList(centerList, GL_COMPILE);
-	Utils::RecursiveRender(model, model->mRootNode->mChildren[1], 1.0);
-	glEndList();
-
-	tailList = glGenLists(1);
-	glNewList(tailList, GL_COMPILE);
-	Utils::RecursiveRender(model, model->mRootNode->mChildren[0], 1.0);
-	glEndList();
+	headList = Utils::GenerateList(model, model->mRootNode->mChildren[2]);
+	centerList = Utils::GenerateList(model, model->mRootNode->mChildren[1]);
+	tailList = Utils::GenerateList(model, model->mRootNode->mChildren[0]);
 
 	return true;
 }
@@ -31,115 +20,119 @@ void Dragon::Start() {
 	lives = MAX_LIVES;
 	movVel = 0.f;
 
-	parts[0].position.Set(START_XPOS, START_YPOS);
-	parts[0].head.Set(START_XPOS + 2.f, START_YPOS);
-	parts[0].tail.Set(START_XPOS - 2.f, START_YPOS);
-	parts[0].rotation = 0.f;
+	nodes[0].position.Set(START_XPOS, START_YPOS);
+	nodes[0].rotation = 0.f;
 
-	for (int i = 1; i < MAX_PARTS; i++) {
-		parts[i].position.Set(parts[i - 1].tail.x - 1.f, START_YPOS);
-		parts[i].head.Set(parts[i].position.x + 1.f, START_YPOS);
-		parts[i].tail.Set(parts[i].position.x - 1.f, START_YPOS);
-	}
+	for (int i = 1; i < MAX_NODES; i++)
+		nodes[i].position.Set(nodes[i - 1].position.x - NODE_DIST, START_YPOS);
 }
 
 void Dragon::Move(bool upwards, bool downwards, float deltaTime) {
 
+	//Nodes movement
 	for (int i = 1; i <= lives + 1; i++) {
+		float dx = nodes[i - 1].position.x - nodes[i].position.x + X_VEL * deltaTime;
+		float dy = nodes[i - 1].position.y - nodes[i].position.y;
 
-		parts[i].rotation += (parts[i - 1].rotation - parts[i].rotation) * ROT_HERITAGE;
-		parts[i].position.y += (parts[i - 1].position.y - parts[i].position.y) * MOVEMENT_HERITAGE;
+		float radians = Utils::Clamp(MIN_ROT_RAD, MAX_ROT_RAD, atan2f(dy, dx));
+		nodes[i].rotation = radians * 180.f / PI;
 
-		float xDelta = cos(parts[i].rotation * PI / 180.0);
-		float yDelta = sin(parts[i].rotation * PI / 180.0);
-
-		parts[i].head.x = parts[i].position.x + xDelta;
-		parts[i].head.y = parts[i].position.y + yDelta;
-		parts[i].tail.x = parts[i].position.x - xDelta;
-		parts[i].tail.y = parts[i].position.y - yDelta;
-
-		xDelta = parts[i - 1].tail.x - parts[i].head.x;
-		yDelta = parts[i - 1].tail.y - parts[i].head.y;
-
-		parts[i].head.x += xDelta;
-		parts[i].head.y += yDelta;
-		parts[i].position.x += xDelta;
-		parts[i].position.y += yDelta;
-		parts[i].tail.x += xDelta;
-		parts[i].tail.y += yDelta;
+		float distance = (i == 1) ? NODE_DIST + 1.f : NODE_DIST;
+		nodes[i].position.x = nodes[i - 1].position.x - distance * cos(radians);
+		nodes[i].position.y = nodes[i - 1].position.y - distance * sin(radians);
 	}
 
-	if (upwards && parts[0].position.y < YMAX) {
+	//Head movement
+	if (upwards && nodes[0].position.y < MAX_Y_POS) {
 		movVel = Utils::Clamp(MOV_ACEL * deltaTime, MAX_MOV_VEL, movVel + MOV_ACEL * deltaTime);
-		parts[0].rotation = Utils::Clamp(MIN_ROT, MAX_ROT, parts[0].rotation + ROT_VEL * 5.0 * deltaTime);
-		
-	} else if (downwards && parts[0].position.y > YMIN) {
+		nodes[0].rotation = Utils::Clamp(MIN_ROT, MAX_ROT, nodes[0].rotation + ROT_VEL * 5.0 * deltaTime);
+
+	} else if (downwards && nodes[0].position.y > MIN_Y_POS) {
 		movVel = Utils::Clamp(MIN_MOV_VEL, -MOV_ACEL * deltaTime, movVel - MOV_ACEL * deltaTime);
-		parts[0].rotation = Utils::Clamp(MIN_ROT, MAX_ROT, parts[0].rotation - ROT_VEL * 5.0 * deltaTime);	
+		nodes[0].rotation = Utils::Clamp(MIN_ROT, MAX_ROT, nodes[0].rotation - ROT_VEL * 5.0 * deltaTime);
 
-	} else if (parts[0].rotation < 0.f || movVel < 0.f) {
+	} else if (nodes[0].rotation < 0.f || movVel < 0.f) {
 		movVel = Utils::Clamp(MIN_MOV_VEL, 0.f, movVel + MOV_ACEL * deltaTime);
-		parts[0].rotation = Utils::Clamp(MIN_ROT, 0.f, parts[0].rotation + ROT_VEL * deltaTime);
+		nodes[0].rotation = Utils::Clamp(MIN_ROT, 0.f, nodes[0].rotation + ROT_VEL * deltaTime);
 
-	} else if (parts[0].rotation > 0.f || movVel > 0.f) {
+	} else if (nodes[0].rotation > 0.f || movVel > 0.f) {
 		movVel = Utils::Clamp(0.f, MAX_MOV_VEL, movVel - MOV_ACEL * deltaTime);
-		parts[0].rotation = Utils::Clamp(0.f, MAX_ROT, parts[0].rotation - ROT_VEL * deltaTime);
+		nodes[0].rotation = Utils::Clamp(0.f, MAX_ROT, nodes[0].rotation - ROT_VEL * deltaTime);
 	}
 
-	parts[0].position.y = Utils::Clamp(YMIN, YMAX, parts[0].position.y + movVel * deltaTime);
+	nodes[0].position.y = Utils::Clamp(MIN_Y_POS, MAX_Y_POS, nodes[0].position.y + movVel * deltaTime);
 
-	float xDelta = 2.f * cos(parts[0].rotation * PI / 180.0);
-	float yDelta = 2.f * sin(parts[0].rotation * PI / 180.0);
-
-	parts[0].head.x = parts[0].position.x + xDelta;
-	parts[0].head.y = parts[0].position.y + yDelta;
-	parts[0].tail.x = parts[0].position.x - xDelta;
-	parts[0].tail.y = parts[0].position.y - yDelta;
+	//Lost node animation
+	if (animateLostNode) {
+		if (fallTime < HIT_TIME) {
+			fallTime += deltaTime;
+			fallVel -= GRAVITY * deltaTime;
+			lostNode.y += fallVel * deltaTime;
+		} else {
+			animateLostNode = false;
+		}
+	}
 
 }
 
 void Dragon::Draw() {
+	//Head
 	glPushMatrix();
-	glTranslatef(parts[0].position.x, parts[0].position.y, 0.f);
-	glRotatef(parts[0].rotation, 0.f, 0.f, 1.f);
+	glTranslatef(nodes[0].position.x, nodes[0].position.y, 0.f);
+	glRotatef(nodes[0].rotation, 0.f, 0.f, 1.f);
 	glCallList(headList);
 	glPopMatrix();
 
+	//Center
 	int i;
 	for (i = 1; i <= lives; i++) {
 		glPushMatrix();
-		glTranslatef(parts[i].position.x, parts[i].position.y, 0.f);
-		glRotatef(parts[i].rotation, 0.f, 0.f, 1.f);
+		glTranslatef(nodes[i].position.x, nodes[i].position.y, 0.f);
+		glRotatef(nodes[i].rotation, 0.f, 0.f, 1.f);
 		glCallList(centerList);
 		glPopMatrix();
 	}
 
+	//Tail
 	glPushMatrix();
-	glTranslatef(parts[i].position.x, parts[i].position.y, 0.f);
-	glRotatef(parts[i].rotation, 0.f, 0.f, 1.f);
+	glTranslatef(nodes[i].position.x, nodes[i].position.y, 0.f);
+	glRotatef(nodes[i].rotation, 0.f, 0.f, 1.f);
 	glCallList(tailList);
 	glPopMatrix();
+
+	//Lost node animation
+	if (animateLostNode) {
+		glPushMatrix();
+		glTranslatef(lostNode.x, lostNode.y, 0.f);
+		glCallList(centerList);
+		glPopMatrix();
+	}
+
 }
 
 void Dragon::GainLife() {
-	if (lives < MAX_LIVES) 
+	if (lives < MAX_LIVES)
 		lives++;
 }
 
 bool Dragon::LoseLife() {
 	if (lives > 0) {
 		lives--;
+		animateLostNode = true;
+		lostNode.Set(nodes[1].position.x, nodes[1].position.y);
+		fallVel = JUMP_VEL;
+		fallTime = 0.f;
 		return true;
 	}
 	return false;
 }
 
 aiVector2D Dragon::GetBottomLeft() {
-	return parts[0].position - HITBOX_SIZE;
+	return nodes[0].position - HITBOX_SIZE;
 }
 
 aiVector2D Dragon::GetTopRight() {
-	return parts[0].position + HITBOX_SIZE;
+	return nodes[0].position + HITBOX_SIZE;
 }
 
 Dragon::~Dragon() {

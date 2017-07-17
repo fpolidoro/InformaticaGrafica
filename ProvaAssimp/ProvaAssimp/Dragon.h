@@ -1,27 +1,33 @@
 #pragma once
 #include "Utils.h"
+#include <math.h>
 
 #define PI 3.14159265f
 
-#define MAX_PARTS 7
-#define MAX_LIVES MAX_PARTS - 2
+#define MAX_NODES 7
+#define MAX_LIVES MAX_NODES - 2
+#define NODE_DIST 2.f
 #define HITBOX_SIZE 1.5f
 
 #define START_XPOS 10.f
 #define START_YPOS 8.f
 
+#define X_VEL 20.f
 #define ROT_VEL 60.f
 #define MOV_ACEL 64.f
 #define MAX_MOV_VEL 24.f
 #define MIN_MOV_VEL -MAX_MOV_VEL
 
-#define MOVEMENT_HERITAGE 80.f / 100.f
-#define ROT_HERITAGE 5.f / 100.f
-
-#define YMIN 2.f
-#define YMAX 18.f
+#define MIN_Y_POS 2.f
+#define MAX_Y_POS 18.f
 #define MAX_ROT 30.f
 #define MIN_ROT -MAX_ROT
+#define MAX_ROT_RAD (MAX_ROT * PI / 180.f)
+#define MIN_ROT_RAD (MIN_ROT * PI / 180.f)
+
+#define HIT_TIME 1.f
+#define GRAVITY 140.f
+#define JUMP_VEL 40.f
 
 class Dragon {
 public:
@@ -43,16 +49,18 @@ private:
 	GLuint centerList;
 	GLuint tailList;
 
-	struct Part {
+	struct Node {
 		aiVector2D position;
-		aiVector2D head;
-		aiVector2D tail;
 		float rotation;
 	};
-	Part parts[MAX_PARTS];
+	Node nodes[MAX_NODES];
+
+	aiVector2D lostNode;
+	bool animateLostNode;
+	float fallTime;
+	float fallVel;
 
 	float movVel;
 	int lives;
-
 };
 

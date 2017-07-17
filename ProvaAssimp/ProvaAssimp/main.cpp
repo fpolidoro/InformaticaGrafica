@@ -17,16 +17,24 @@ GLuint menuList;
 #define FIELD_OF_VIEW 45.f
 #define Z_NEAR 1.f
 #define Z_FAR 200.f
-#define VELOCITY 12.f
 #define HIT_TIME 1.f
+#define ASPECT_RATIO (16.f / 9.f)
 
 void Reshape(int width, int height) {
-	const double aspectRatio = (float)width / height;
+	//const double aspectRatio = (float)width / height;
+	int newWidth = height * ASPECT_RATIO;
+	int newHeight = width / ASPECT_RATIO;
+
+	if (newWidth > width) newWidth = width;
+	if (newHeight > height) newHeight = height;
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(FIELD_OF_VIEW, aspectRatio, Z_NEAR, Z_FAR);
-	glViewport(0, 0, width, height);
+
+	//gluPerspective(FIELD_OF_VIEW, aspectRatio, Z_NEAR, Z_FAR);
+	//glViewport(0, 0, width, height);
+	gluPerspective(FIELD_OF_VIEW, ASPECT_RATIO, Z_NEAR, Z_FAR);
+	glViewport(0, 0, newWidth, newHeight);
 }
 
 void DrawScore() {
@@ -87,7 +95,7 @@ void Display(void) {
 
 		if (!invulnerable)
 			dragon.Draw();
-		else if ((int)(hitTimer * 10.f) % 2)
+		else if (!((int)(hitTimer * 10.f) % 2))
 			dragon.Draw();
 	}
 
@@ -113,7 +121,7 @@ void Idle(void) {
 		oldTime = time;
 
 		dragon.Move(turnUp, turnDown, deltaTime);
-		level.Move(-VELOCITY*deltaTime);
+		level.Move(deltaTime);
 
 		if (!invulnerable) {
 			switch (level.CheckHit(dragon.GetBottomLeft(), dragon.GetTopRight())) {
@@ -223,7 +231,7 @@ bool InitGL() {
 bool InitGame() {
 	if (!(menu = Utils::LoadAsset("Models\\menu.obj")))	
 		return false;
-	menuList = Utils::GenerateList(menu);
+	menuList = Utils::GenerateList(menu, menu->mRootNode);
 
 	if (!dragon.Init() || !level.Init())
 		return false;
