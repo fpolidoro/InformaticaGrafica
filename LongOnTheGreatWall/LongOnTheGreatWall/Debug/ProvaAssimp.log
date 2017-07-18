@@ -1,0 +1,4 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(387,5): warning MSB8028: la directory intermedia (Debug\) contiene file condivisi da un altro progetto (ProvaAssimp.vcxproj). Tale condizione può comportare un comportamento di pulizia e ricompilazione non corretto.
+  ProvaAssimp.vcxproj -> C:\Users\utente\Desktop\ProvaAssimp\Debug\LongAndTheGreatWall.exe
+  ProvaAssimp.vcxproj -> C:\Users\utente\Desktop\ProvaAssimp\Debug\LongAndTheGreatWall.pdb (Partial PDB)
+  ProvaAssimp.vcxproj -> C:\Users\utente\Desktop\ProvaAssimp\Debug\LongAndTheGreatWall.pdb (Partial -> Full PDB)
