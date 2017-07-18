@@ -16,15 +16,15 @@ void Collectible::Draw() {
 	glCallList(callList);
 	glPopMatrix();
 
-	glPushMatrix();
-	glTranslatef(bottomLeft.x, bottomLeft.y, 0.f);
-	glutSolidCube(0.5f);
-	glPopMatrix();
+	//glPushMatrix();
+	//glTranslatef(bottomLeft.x, bottomLeft.y, 0.f);
+	//glutSolidCube(0.5f);
+	//glPopMatrix();
 
-	glPushMatrix();
-	glTranslatef(topRight.x, topRight.y, 0.f);
-	glutSolidCube(0.5f);
-	glPopMatrix();
+	//glPushMatrix();
+	//glTranslatef(topRight.x, topRight.y, 0.f);
+	//glutSolidCube(0.5f);
+	//glPopMatrix();
 }
 
 void Collectible::Move(float amount) {

@@ -1,57 +1,66 @@
 #pragma once
 #include "Utils.h"
+#include <math.h>
 
 #define PI 3.14159265f
 
-#define MAX_PARTS 8
-#define MAX_LIVES MAX_PARTS - 2
+#define MAX_NODES 7
+#define MAX_LIVES MAX_NODES - 2
+#define NODE_DIST 2.f
 #define HITBOX_SIZE 1.5f
 
 #define START_XPOS 10.f
 #define START_YPOS 8.f
 
+#define X_VEL 20.f
 #define ROT_VEL 60.f
 #define MOV_ACEL 64.f
 #define MAX_MOV_VEL 24.f
 #define MIN_MOV_VEL -MAX_MOV_VEL
 
-#define MOVEMENT_HERITAGE 60.f / 100.f
-#define ROT_HERITAGE 4.f / 100.f
-
-#define YMIN 2.f
-#define YMAX 18.f
+#define MIN_Y_POS 2.f
+#define MAX_Y_POS 18.f
 #define MAX_ROT 30.f
 #define MIN_ROT -MAX_ROT
+#define MAX_ROT_RAD (MAX_ROT * PI / 180.f)
+#define MIN_ROT_RAD (MIN_ROT * PI / 180.f)
+
+#define HIT_TIME 1.f
+#define GRAVITY 140.f
+#define JUMP_VEL 40.f
 
 class Dragon {
 public:
 	Dragon();
 	bool Init();
+	void Start();
 	void Move(bool upwards, bool downwards, float delta);
 	void Draw();
 	void GainLife();
-	void LoseLife();
+	bool LoseLife();
 	aiVector2D GetBottomLeft();
 	aiVector2D GetTopRight();
 	~Dragon();
 
 private:
-	const struct aiScene* model = NULL;
+	const struct aiScene* model;
 
-	GLuint headList = 0;
-	GLuint centerList = 0;
-	GLuint tailList = 0;
+	GLuint headList;
+	GLuint centerList;
+	GLuint tailList;
 
-	struct Part {
+	struct Node {
 		aiVector2D position;
-		aiVector2D head;
-		aiVector2D tail;
 		float rotation;
 	};
-	Part parts[MAX_PARTS];
+	Node nodes[MAX_NODES];
 
-	float movVel = 0.f;
-	int lives = MAX_LIVES;
+	aiVector2D lostNode;
+	bool animateLostNode;
+	float fallTime;
+	float fallVel;
 
+	float movVel;
+	int lives;
 };
 

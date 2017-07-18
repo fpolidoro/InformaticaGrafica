@@ -1,9 +1,5 @@
 #include "Level.h"
 
-Level::Level() {
-
-}
-
 bool Level::Init() {
 	if (!LoadAssets())
 		return false;
@@ -11,26 +7,22 @@ bool Level::Init() {
 	if (!GenerateBlocks())
 		return false;
 
-	srand((unsigned)time(NULL));
-
 	return true;
 }
 
 bool Level::LoadAssets() {
-	background = Utils::LoadAsset("Models\\sfondo.obj");
-	if (!background) {
-		Utils::Log("Couldn't load asset file");
-		return false;
-	}
 
-	backgroundList = Utils::GenerateList(background);
-
-	wall = Utils::LoadAsset("Models\\muro.obj");
-	if (!wall) {
-		Utils::Log("Couldn't load asset file");
+	if (!(background = Utils::LoadAsset("Models\\sfondo.obj")))
 		return false;
-	}
-	wallList = Utils::GenerateList(wall);
+	skyList = Utils::GenerateList(background, background->mRootNode->mChildren[0]);
+	bgList[0] = Utils::GenerateList(background, background->mRootNode->mChildren[1]);
+	bgList[1] = Utils::GenerateList(background, background->mRootNode->mChildren[2]);
+	bgList[2] = Utils::GenerateList(background, background->mRootNode->mChildren[4]);
+	bgList[3] = Utils::GenerateList(background, background->mRootNode->mChildren[3]);
+
+	if (!(wall = Utils::LoadAsset("Models\\muro.obj")))
+		return false;
+	wallList = Utils::GenerateList(wall, wall->mRootNode);
 
 	std::ifstream file("Levels\\elements.txt", std::ios::in);
 
@@ -43,13 +35,11 @@ bool Level::LoadAssets() {
 	int xSize, ySize;
 	while (file >> filename >> xSize >> ySize) {
 		Element e;
-		e.model = Utils::LoadAsset(filename.c_str());
-		if (!e.model) {
-			Utils::Log("Couldn't load asset");
-			return false;
-		}
 
-		e.list = Utils::GenerateList(e.model);
+		if (!(e.model = Utils::LoadAsset(filename.c_str())))
+			return false;
+		e.list = Utils::GenerateList(e.model, e.model->mRootNode);
+
 		e.size.Set(xSize, ySize);
 		elements.push_back(e);
 	}
@@ -59,13 +49,6 @@ bool Level::LoadAssets() {
 }
 
 bool Level::GenerateBlocks() {
-
-	Block b(wallList);
-	b.Move(START_POS);
-	blockQueue.push_back(b);
-	b.Move(LENGTH);
-	blockQueue.push_back(b);
-
 	for (int i = 1; i <= N_BLOCKS; i++) {
 		std::stringstream filename;
 		filename << "Levels\\level" << i << ".txt";
@@ -73,7 +56,7 @@ bool Level::GenerateBlocks() {
 		std::ifstream file(filename.str(), std::ios::in);
 
 		if (!file) {
-			Utils::Log("Couldn't load asset file");
+			Utils::Log("Couldn't load level file");
 			return false;
 		}
 
@@ -95,22 +78,61 @@ bool Level::GenerateBlocks() {
 	return true;
 }
 
-void Level::Move(float amount) {
+void Level::Start() {
+	Block b(wallList);
+	srand((unsigned)time(NULL));
+	blockQueue.clear();
+
+	b.Move(START_POS);
+	blockQueue.push_back(b);
+	b.Move(LENGTH);
+	blockQueue.push_back(b);
+
+	for (int i = 0; i < N_BG; i++)
+		bgArray[i] = BG_X_POS;
+
+	test = -1;
+}
+
+void Level::Move(float deltaTime) {
 
 	for (std::list<Block>::iterator i = blockQueue.begin(); i != blockQueue.end(); ++i)
-		i->Move(amount);
+		i->Move(-VELOCITY * deltaTime);
 
 	if (blockQueue.front().position.x < END_POS)
 		NextBlock();
+
+	for (int i = 0; i < N_BG; i++) {
+		bgArray[i] -= VELOCITY / (BG_VELOCITY_FACTOR * (N_BG - i)) * deltaTime;
+		if (bgArray[i] < BG_X_POS - BG_LENGTH) {
+			bgArray[i] += BG_LENGTH;
+		}
+	}
 }
 
 void Level::Draw() {
+	//Sky
 	glPushMatrix();
-	glTranslatef(-10.0f, -6.f, -10.f);
-	glScalef(1.2f, 1.2f, 0.f);
-	glCallList(backgroundList);
+	glTranslatef(BG_X_POS, BG_Y_POS, BG_Z_POS);
+	glScalef(BG_SCALE, BG_SCALE, 0.f);
+	glCallList(skyList);
 	glPopMatrix();
 
+	//Background levels
+	for (int i = 0; i < 4; i++) {
+		glPushMatrix();
+		glTranslatef(bgArray[i], BG_Y_POS, BG_Z_POS + 0.1f * i);
+		glScalef(BG_SCALE, BG_SCALE, 0.f);
+		glCallList(bgList[i]);
+		glPopMatrix();
+		glPushMatrix();
+		glTranslatef(bgArray[i] + BG_LENGTH, BG_Y_POS, BG_Z_POS + 0.1f * i);
+		glScalef(BG_SCALE, BG_SCALE, 0.f);
+		glCallList(bgList[i]);
+		glPopMatrix();
+	}
+
+	//Block
 	for (std::list<Block>::iterator i = blockQueue.begin(); i != blockQueue.end(); ++i)
 		i->Draw();
 }
@@ -125,6 +147,9 @@ void Level::NextBlock() {
 
 	blockQueue.push_back(b);
 	blockQueue.pop_front();
+	std::stringstream s;
+	s << test;
+	Utils::Log(s.str());
 }
 
 int Level::CheckHit(aiVector2D bottomLeft, aiVector2D topRight) {
@@ -141,6 +166,7 @@ int Level::CheckHit(aiVector2D bottomLeft, aiVector2D topRight) {
 
 Level::~Level() {
 	aiReleaseImport(wall);
+	aiReleaseImport(background);
 
 	for (int i = 0; i < elements.size(); i++)
 		aiReleaseImport(elements[i].model);
