@@ -34,7 +34,7 @@ void Dragon::Move(bool upwards, bool downwards, float deltaTime) {
 		float dx = nodes[i - 1].position.x - nodes[i].position.x + X_VEL * deltaTime;
 		float dy = nodes[i - 1].position.y - nodes[i].position.y;
 
-		float radians = Utils::Clamp(MIN_ROT_RAD, MAX_ROT_RAD, atan2f(dy, dx));
+		float radians = Utils::Clamp(MIN_ROT_RAD - VAR_RAD * i, MAX_ROT_RAD + VAR_RAD * i, atan2f(dy, dx));
 		nodes[i].rotation = radians * 180.f / PI;
 
 		float distance = (i == 1) ? NODE_DIST + 1.f : NODE_DIST;
@@ -110,9 +110,13 @@ void Dragon::Draw() {
 
 }
 
-void Dragon::GainLife() {
-	if (lives < MAX_LIVES)
+bool Dragon::GainLife() {
+	if (lives < MAX_LIVES) {
 		lives++;
+		return true;
+	} else {
+		return false;
+	}
 }
 
 bool Dragon::LoseLife() {

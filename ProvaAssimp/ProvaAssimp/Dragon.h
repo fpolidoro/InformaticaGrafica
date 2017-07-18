@@ -24,6 +24,7 @@
 #define MIN_ROT -MAX_ROT
 #define MAX_ROT_RAD (MAX_ROT * PI / 180.f)
 #define MIN_ROT_RAD (MIN_ROT * PI / 180.f)
+#define VAR_RAD (5.f * PI / 180.f)
 
 #define HIT_TIME 1.f
 #define GRAVITY 140.f
@@ -36,7 +37,7 @@ public:
 	void Start();
 	void Move(bool upwards, bool downwards, float delta);
 	void Draw();
-	void GainLife();
+	bool GainLife();
 	bool LoseLife();
 	aiVector2D GetBottomLeft();
 	aiVector2D GetTopRight();

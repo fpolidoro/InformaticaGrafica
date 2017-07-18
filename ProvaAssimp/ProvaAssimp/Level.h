@@ -7,7 +7,7 @@
 #include <vector>
 #include <sstream>
 
-#define N_BLOCKS 15
+#define N_BLOCKS 10
 #define START_POS -14.f
 #define LENGTH 64.f
 #define END_POS START_POS - LENGTH
@@ -18,7 +18,7 @@
 #define N_BG 4
 #define BG_Z_POS -7.f
 #define BG_X_POS -8.f
-#define BG_Y_POS -5.f
+#define BG_Y_POS -4.8f
 #define BG_SCALE 1.5f
 #define BG_LENGTH (LENGTH / 2.f * BG_SCALE)
 
@@ -56,6 +56,6 @@ private:
 
 	float bgArray[4];
 
-	int test = 0;
+	//int test = 0;
 };
 

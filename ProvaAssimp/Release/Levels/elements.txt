@@ -1,0 +1,13 @@
+Models\moneta.obj 		1 1
+Models\yinyang.obj 		1 1
+Models\tempio.obj 		4 2
+Models\tettodrago.obj 		4 2
+Models\torretta.obj 		6 2
+Models\nuvola.obj 		2 1
+Models\lanterna_volante.obj 	1 1
+Models\manifesto.obj 		1 1
+Models\impalcatura1.obj 	3 1
+Models\impalcatura2.obj 	2 3
+Models\lanterne.obj 		4 1
+Models\aquilone.obj 		3 2
+

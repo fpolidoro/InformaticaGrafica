@@ -91,7 +91,7 @@ void Level::Start() {
 	for (int i = 0; i < N_BG; i++)
 		bgArray[i] = BG_X_POS;
 
-	test = -1;
+	//test = 6;
 }
 
 void Level::Move(float deltaTime) {
@@ -138,18 +138,15 @@ void Level::Draw() {
 }
 
 void Level::NextBlock() {
-	//int n = rand() % blockArray.size();
-	test = (test < N_BLOCKS - 1) ? test + 1 : 0;
+	int n = rand() % blockArray.size();
+	Block b = blockArray[n];
 
-	//Block b = blockArray[n];
-	Block b = blockArray[test];
+	//test = (test < N_BLOCKS - 1) ? test + 1 : 0;
+	//Block b = blockArray[test];
+
 	b.Move(blockQueue.back().position.x + LENGTH);
-
 	blockQueue.push_back(b);
 	blockQueue.pop_front();
-	std::stringstream s;
-	s << test;
-	Utils::Log(s.str());
 }
 
 int Level::CheckHit(aiVector2D bottomLeft, aiVector2D topRight) {

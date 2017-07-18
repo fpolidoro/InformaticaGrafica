@@ -1,9 +1,12 @@
 #include "Level.h"
 #include "Dragon.h"
+#include "irrKlang.h"
+
+using namespace irrklang;
 
 GLfloat lightAmbient[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 GLfloat lightDiffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-GLfloat lightPosition[] = { 0.0f, 15.f, 15.0f, 1.0f };
+GLfloat lightPosition[] = { 15.f, 30.f, 15.0f, 1.0f };
 
 Level level;
 Dragon dragon;
@@ -14,6 +17,8 @@ float hitTimer = 0.f;
 const aiScene* menu;
 GLuint menuList;
 
+ISoundEngine* engine;
+
 #define FIELD_OF_VIEW 45.f
 #define Z_NEAR 1.f
 #define Z_FAR 200.f
@@ -21,7 +26,6 @@ GLuint menuList;
 #define ASPECT_RATIO (16.f / 9.f)
 
 void Reshape(int width, int height) {
-	//const double aspectRatio = (float)width / height;
 	int newWidth = height * ASPECT_RATIO;
 	int newHeight = width / ASPECT_RATIO;
 
@@ -31,8 +35,6 @@ void Reshape(int width, int height) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 
-	//gluPerspective(FIELD_OF_VIEW, aspectRatio, Z_NEAR, Z_FAR);
-	//glViewport(0, 0, width, height);
 	gluPerspective(FIELD_OF_VIEW, ASPECT_RATIO, Z_NEAR, Z_FAR);
 	glViewport(0, 0, newWidth, newHeight);
 }
@@ -110,10 +112,12 @@ void Idle(void) {
 			score = 0.f;
 			level.Start();
 			dragon.Start();
+			engine->stopAllSounds();
+			engine->play2D("Sound\\game.wav", true);
 		}
 		glutPostRedisplay();
-	} else {
 
+	} else {
 		int time;
 		float deltaTime;
 		time = glutGet(GLUT_ELAPSED_TIME);
@@ -128,23 +132,31 @@ void Idle(void) {
 			case 1:
 				score += 100;
 				highScore = (score > highScore) ? score : highScore;
+				engine->play2D("Sound\\coin.wav");
 				break;
 			case 2:
-				dragon.GainLife();
+				if (dragon.GainLife())
+					engine->play2D("Sound\\life.wav");
+				else {
+					score += 200;
+					engine->play2D("Sound\\coin.wav");
+				}
 				break;
 			case 3:
 				if (dragon.LoseLife()) {
 					hitTimer = HIT_TIME;
 					invulnerable = true;
+					engine->play2D("Sound\\fail.wav");
 				} else {
 					inGame = false;
+					engine->stopAllSounds();
+					engine->play2D("Sound\\menu.wav", true);
 				}
 				break;
 			default:
 				break;
 			}
-		}
-		else {
+		} else {
 			hitTimer -= deltaTime;
 			if (hitTimer <= 0.f) {
 				hitTimer = 0.f;
@@ -200,24 +212,54 @@ void KeyUp(unsigned char key, int x, int y) {
 	}
 }
 
+void SpecialKeyDown(int key, int x, int y) {
+	switch (key) {
+	case GLUT_KEY_UP:
+		turnUp = true;
+		turnDown = false;
+		break;
+	case GLUT_KEY_DOWN:
+		turnUp = false;
+		turnDown = true;
+		break;
+	default:
+		break;
+	}
+}
+
+
+void SpecialKeyUp(int key, int x, int y) {
+	switch (key) {
+	case GLUT_KEY_UP:
+		turnUp = false;
+		break;
+	case GLUT_KEY_DOWN:
+		turnDown = false;
+		break;
+	default:
+		break;
+	}
+}
+
 
 bool InitGL() {
 	glEnable(GL_TEXTURE_2D);
-	glShadeModel(GL_SMOOTH);		 // Enables Smooth Shading
+	glShadeModel(GL_SMOOTH);		 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClearDepth(1.0f);				// Depth Buffer Setup
-	glEnable(GL_DEPTH_TEST);		// Enables Depth Testing
-	glDepthFunc(GL_LEQUAL);			// The Type Of Depth Test To Do
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculation
+	glClearDepth(1.0f);				
+	glEnable(GL_DEPTH_TEST);		
+	glDepthFunc(GL_LEQUAL);			
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	
 
 	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);    // Uses default lighting parameters
+	glEnable(GL_LIGHT0);    
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 	glEnable(GL_NORMALIZE);
 
 	glLightfv(GL_LIGHT1, GL_AMBIENT, lightAmbient);
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, lightDiffuse);
 	glLightfv(GL_LIGHT1, GL_POSITION, lightPosition);
+
 	glEnable(GL_LIGHT1);
 
 	glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
@@ -225,18 +267,25 @@ bool InitGL() {
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	return true;					// Initialization Went OK
+	return true;					
 }
 
 bool InitGame() {
-	if (!(menu = Utils::LoadAsset("Models\\menu.obj")))	
+	if (!(menu = Utils::LoadAsset("Models\\menu.obj")))
 		return false;
 	menuList = Utils::GenerateList(menu, menu->mRootNode);
 
 	if (!dragon.Init() || !level.Init())
 		return false;
 
-	/*oldTime = glutGet(GLUT_ELAPSED_TIME);*/
+	engine = createIrrKlangDevice();
+	if (!engine) {
+		printf("Could not startup engine\n");
+		return false;
+	}
+
+	engine->play2D("Sound\\menu.wav", true);
+
 	return true;
 }
 
@@ -253,6 +302,8 @@ int main(int argc, char **argv) {
 	glutReshapeFunc(Reshape);
 	glutKeyboardFunc(KeyDown);
 	glutKeyboardUpFunc(KeyUp);
+	glutSpecialFunc(SpecialKeyDown);
+	glutSpecialUpFunc(SpecialKeyUp);
 
 	//Utils::AttachStream();
 
@@ -267,6 +318,8 @@ int main(int argc, char **argv) {
 	}
 
 	glutMainLoop();
+
+	engine->drop();
 
 	//Utils::DetachStream();
 

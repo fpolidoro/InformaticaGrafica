@@ -4,7 +4,7 @@
 #include "aiScene.h"
 
 #include <GL\glut.h>
-#include <IL/il.h>
+#include <IL\il.h>
 
 #include <string.h>
 #include <map>
@@ -36,14 +36,11 @@ public:
 	static GLuint GenerateList(const aiScene* scene, const aiNode* node);
 
 private:
-
 	static const std::string basepath;
 
 	static std::map<std::string, GLuint*> textureIdMap;
 	static GLuint* textureIds;
 
 	static struct aiLogStream stream;
-
-
 };
 
