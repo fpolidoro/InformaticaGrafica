@@ -31,7 +31,7 @@ main.cpp(54): warning C4018: '<': errata corrispondenza tra signed e unsigned
 main.cpp(69): warning C4018: '<': errata corrispondenza tra signed e unsigned
 main.cpp(311): warning C4101: 'stream': variabile locale senza riferimenti
   Generazione codice in corso...
-  5 of 928 functions ( 0.5%) were compiled, the rest were copied from previous compilation.
+  0 of 928 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
     3 functions had inline decision re-evaluated but remain unchanged
   Generazione codice terminata

@@ -1,0 +1,4 @@
+Premi le frecce direzionali su/giù o w/s per muoverti.
+Prendi le monetine per guadagnare punti.
+Prendi i simboli yin-yang per guadagnare vita.
+La vita rimanente è equivalente al numero di pezzi centrali del drago. Evita gli ostacoli per non perderli!
