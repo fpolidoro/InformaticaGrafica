@@ -20,7 +20,7 @@ In order to avoid having an extremely long dragon, the speed of the game increas
 :-------------------------:|:-------------------------:
 Main Menu           |  Game level
 
-![Long looses health points](long_health.gif)  
+![Long looses health points](long_health.gif)
 _Long_ looses health points
 
 #### Keys and instructions
@@ -37,4 +37,4 @@ Bamboo particles           |  Detail for the panda
 
 
 #### Final rendering scene
-![Rendering](IMG_20180820_110805.jpg)
+<img src="IMG_20180820_110805.jpg" align="center" alt="Final rendering scene"/>
